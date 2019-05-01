@@ -116,15 +116,58 @@ ncurses.link_flags = -lncurses
 ncurses: PROJECT=ncurses
 ncurses: $$(NATIVE_TARGET)
 
+# subproject: git2 with stub generation
+git2-stubs.install = no
+git2-stubs.dir = examples/git2/stub-generation/bindings
+git2-stubs.subproject_deps = ctypes
+git2-stubs.deps = bytes str unix bigarray integers uri
+git2-stubs: PROJECT=git2-stubs
+git2-stubs: $$(NATIVE_TARGET) $$(LIB_TARGETS)
+
+git2-stub-generator.install = no
+git2-stub-generator.dir = examples/git2/stub-generation/stub-generator
+git2-stub-generator.deps = integers
+git2-stub-generator.subproject_deps = ctypes cstubs \
+  ctypes-foreign-base ctypes-foreign-unthreaded git2-stubs
+git2-stub-generator.deps = bytes str unix bigarray integers uri
+git2-stub-generator: PROJECT=git2-stub-generator
+git2-stub-generator: $$(NATIVE_TARGET)
+
+git2-cmd.install = no
+git2-cmd.dir = examples/git2/stub-generation
+git2-cmd.subproject_deps = ctypes git2-stubs
+git2-cmd.deps = bytes str unix bigarray integers uri
+git2-cmd.extra_mls = git2_generated.ml
+git2-cmd.extra_cs = git2_stubs.c
+git2-cmd.link_flags = -lgit2
+git2-cmd: PROJECT=git2-cmd
+git2-cmd: $$(NATIVE_TARGET)
+
+git2-cmd-build: examples/git2/stub-generation/git2_generated.ml
+examples/git2/stub-generation/git2_generated.ml: git2-stubs
+	_build/git2-stub-generator.native
+
+# subproject: git2 using dynamic linking (foreign)
+git2.install = no
+git2.dir = examples/git2/foreign
+git2.subproject_deps = ctypes ctypes-foreign-base ctypes-foreign-unthreaded
+git2.deps = bytes unix bigarray str integers uri
+git2.link_flags = -lgit2
+git2: PROJECT=git2
+git2: $$(NATIVE_TARGET)
+
 EXAMPLES =
 EXAMPLES += ncurses ncurses-stubs ncurses-stub-generator ncurses-cmd-build ncurses-cmd
-EXAMPLES += fts     fts-stubs     fts-stub-generator  fts-cmd-build     fts-cmd
+EXAMPLES += git2 git2-stubs git2-stub-generator git2-cmd-build git2-cmd
 EXAMPLES += date    date-stubs    date-stub-generator date-cmd-build    date-cmd
+EXAMPLES += fts     fts-stubs     fts-stub-generator  fts-cmd-build     fts-cmd
 
 run-examples: examples
-	 # this doesn't run the ncurses example, which takes control of the terminal 
+	 # this doesn't run the ncurses example, which takes control of the terminal
 	_build/date.native
 	_build/date-cmd.native
+	_build/git2.native
+	_build/git2-cmd.native
 	_build/fts-cmd.native src
 
 EXAMPLES_GENERATED=$(foreach example,$(EXAMPLES),\
