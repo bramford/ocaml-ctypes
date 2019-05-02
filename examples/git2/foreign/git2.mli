@@ -140,7 +140,7 @@ module Oid :
     val git_oid_fromstrp :
       git_oid Ctypes.structure Ctypes_static.ptr -> string -> int
     val git_oid_fromstrn :
-      git_oid Ctypes.structure Ctypes_static.ptr -> string -> Unsigned.size_t
+      git_oid Ctypes.structure Ctypes_static.ptr -> string -> Unsigned.size_t -> Unsigned.size_t
     val git_oid_fmt :
       string -> git_oid Ctypes.structure Ctypes_static.ptr -> unit
     val git_oid_nfmt :

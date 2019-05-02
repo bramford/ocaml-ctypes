@@ -366,7 +366,7 @@ struct
       let git_oid_fromstrn =
         foreign
           "git_oid_fromstrn"
-          (ptr git_oid @-> string @-> returning size_t)
+          (ptr git_oid @-> string @-> size_t @-> returning size_t)
 
       let git_oid_fmt =
         foreign
@@ -592,7 +592,7 @@ struct
 
       let git_repository_head_detached =
         foreign
-          "git_repository_head"
+          "git_repository_head_detached"
           (ptr Types.git_repository @-> returning int)
 
       let git_repository_head_unborn =
