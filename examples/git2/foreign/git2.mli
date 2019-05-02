@@ -222,12 +222,6 @@ module Repository :
     val git_repository_init_flag_t : int64 Ctypes.typ
     val git_repository_init_mode_t : int64 Ctypes.typ
     val git_repository_state_t : int64 Ctypes.typ
-    val git_repository_fetchhead_foreach_cb :
-      (string ->
-       string -> string -> Unsigned.uint -> unit Ctypes_static.ptr -> int)
-      Ctypes.fn
-    val git_repository_mergehead_foreach_cb :
-      (string -> unit Ctypes_static.ptr -> int) Ctypes.fn
     val git_repository_init_options :
       git_repository_init_options Ctypes.structure Ctypes.typ
     val git_repository_open :
@@ -300,15 +294,6 @@ module Repository :
       Types.git_repository Ctypes.structure Ctypes_static.ptr -> int
     val git_repository_state_cleanup :
       Types.git_repository Ctypes.structure Ctypes_static.ptr -> int
-    val git_repository_fetchhead_foreach :
-      Types.git_repository Ctypes.structure Ctypes_static.ptr ->
-      (string ->
-       string -> string -> Unsigned.uint -> unit Ctypes_static.ptr -> int) ->
-      unit Ctypes_static.ptr -> int
-    val git_repository_mergehead_foreach :
-      Types.git_repository Ctypes.structure Ctypes_static.ptr ->
-      (string -> unit Ctypes_static.ptr -> int) ->
-      unit Ctypes_static.ptr -> int
     val git_repository_hashfile :
       Oid.git_oid Ctypes.structure Ctypes_static.ptr ->
       Types.git_repository Ctypes.structure Ctypes_static.ptr ->
@@ -393,8 +378,6 @@ module Clone :
   end
 module Attr :
   sig
-    val git_attr_for_each_cb :
-      (string -> string -> unit Ctypes_static.ptr -> int) Ctypes.fn
     val git_attr_value : string -> int
     val git_attr_get :
       string Ctypes_static.ptr ->
@@ -405,20 +388,12 @@ module Attr :
       Types.git_repository Ctypes.structure Ctypes_static.ptr ->
       Unsigned.uint32 ->
       string -> Unsigned.size_t -> string Ctypes_static.ptr -> int
-    val git_attr_for_each :
-      Types.git_repository Ctypes.structure Ctypes_static.ptr ->
-      Unsigned.uint32 ->
-      string ->
-      (string -> string -> unit Ctypes_static.ptr -> int) ->
-      unit Ctypes_static.ptr -> int
     val git_attr_add_macro :
       Types.git_repository Ctypes.structure Ctypes_static.ptr ->
       string -> string -> int
   end
 module Blob :
   sig
-    val git_blob_chunk_cb :
-      (string -> Unsigned.size_t -> unit Ctypes_static.ptr -> int) Ctypes.fn
     val git_blob_lookup :
       Types.git_blob Ctypes.structure Ctypes_static.ptr Ctypes_static.ptr ->
       Types.git_repository Ctypes.structure Ctypes_static.ptr ->
@@ -453,12 +428,6 @@ module Blob :
       Oid.git_oid Ctypes.structure Ctypes_static.ptr ->
       Types.git_repository Ctypes.structure Ctypes_static.ptr ->
       string -> int
-    val git_blob_create_fromchunks :
-      Oid.git_oid Ctypes.structure Ctypes_static.ptr ->
-      Types.git_repository Ctypes.structure Ctypes_static.ptr ->
-      string ->
-      (string -> Unsigned.size_t -> unit Ctypes_static.ptr -> int) ->
-      unit Ctypes_static.ptr -> int
     val git_blob_create_frombuffer :
       Oid.git_oid Ctypes.structure Ctypes_static.ptr ->
       Types.git_repository Ctypes.structure Ctypes_static.ptr ->
@@ -549,39 +518,3 @@ module Commit :
       string option ->
       Types.git_tree Ctypes.structure Ctypes_static.ptr option -> int
   end
-module Results :
-  sig
-    type ('error_code, 'payload) t =
-        Git_error of 'error_code
-      | Git_payload of 'payload
-    val return : 'a -> ('b, 'a) t
-    val ( >>= ) : ('a, 'b) t -> ('b -> ('a, 'c) t) -> ('a, 'c) t
-    val of_int : int -> (string * int, unit) t
-    val result : int -> (string * int, unit) t
-  end
-type commit = {
-  oid : Oid.git_oid Ctypes.ptr;
-  encoding : String.t;
-  message : String.t;
-  summary : String.t;
-  time : Types.git_time_t;
-  offset_in_min : int;
-  committer_name : String.t;
-  committer_email : String.t;
-  author_name : String.t;
-  author_email : String.t;
-  header : String.t;
-  tree_id : Oid.git_oid Ctypes.ptr;
-}
-val init : unit -> (string * int, unit) Results.t
-val shutdown : unit -> (string * int, unit) Results.t
-val init_repo :
-  ?is_bare:bool ->
-  ?init_options:Repository.git_repository_init_options Ctypes.structure
-                Ctypes_static.ptr ->
-  repo_path:string -> (string * int, unit) Results.t
-val git_library_version : unit -> string
-val clone_simple :
-  ?path:string -> repo_url:string -> (string * int, unit) Results.t
-val find_repo : string -> (string * int, string) Results.t
-val is_a_repo : string -> (string * int, unit) Results.t
