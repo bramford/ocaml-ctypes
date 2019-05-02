@@ -28,7 +28,6 @@ let c_headers = "
 #include <git2/ignore.h>
 #include <git2/index.h>
 #include <git2/indexer.h>
-#include <git2/inttypes.h>
 #include <git2/merge.h>
 #include <git2/message.h>
 #include <git2/net.h>
@@ -56,10 +55,8 @@ let c_headers = "
 #include <git2/signature.h>
 #include <git2/stash.h>
 #include <git2/status.h>
-#include <git2/stdint.h>
 #include <git2/strarray.h>
 #include <git2/submodule.h>
-#include <git2/sys>
 #include <git2/sys/commit.h>
 #include <git2/sys/config.h>
 #include <git2/sys/diff.h>
